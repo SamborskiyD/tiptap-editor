@@ -7,23 +7,26 @@
   
 <script>
 import StarterKit from '@tiptap/starter-kit'
+import Paragraph from '@tiptap/extension-paragraph'
 import { Editor, EditorContent } from '@tiptap/vue-3'
+import { EditorState, Transaction } from '@tiptap/pm/state'
 import EditorMenu from './EditorMenu.vue'
 
 import PageExtension from "@/extensions/PageExtension.js"
+import { Fragment } from 'vue'
 
 
 export default {
   components: {
     EditorMenu,
     EditorContent,
+    EditorState,
   },
 
   data() {
     return {
       editor: null,
       prevHeight: 0,
-      editorText: "",
     }
   },
 
@@ -33,27 +36,38 @@ export default {
         StarterKit,
         PageExtension,
       ],
+
       content: `<editor-page />`,
       
       onUpdate({ editor }) {
-        let editorHtml = editor.getHTML()
-        let height = editor.view.dom.clientHeight
-        console.log(height)
 
-        if(height > this.prevHeight){
-          if (height % 1000 > 0 && height % 1000 < 100) {
-            editorHtml += `<editor-page />`
-            editor.commands.setContent(editorHtml)
-          }
+        const editorPages = editor.state.doc.content;
+        let editorHtml = editor.getHTML()
+
+        if (editorPages.lastChild.content.size == 100){
+          editorHtml += `<editor-page />`
+          editor.commands.setContent(editorHtml)
         }
-        else{
-          let countOfPages = editor.view.dom.childElementCount
-          if (height % 1000*countOfPages > 0 & height % 1000*countOfPages < 100)
-          {
-            editor.view.dom.removeChild(editor.view.dom.lastElementChild)
-          }
-        }
-        this.prevHeight = height
+        
+
+
+        // let editorHtml = editor.getHTML()
+        // let height = editor.view.dom.clientHeight
+
+        // if(height > this.prevHeight){
+        //   if (height % 300 > 0 && height % 300 < 100) {
+        //     editorHtml += `<editor-page />`
+        //     editor.commands.setContent(editorHtml)
+        //   }
+        // }
+        // else{
+        //   let countOfPages = editor.view.dom.childElementCount
+        //   if (height % 1000*countOfPages > 0 & height % 1000*countOfPages < 100)
+        //   {
+        //     editor.view.dom.removeChild(editor.view.dom.lastElementChild)
+        //   }
+        // }
+        // this.prevHeight = height
       }
     })
   },
