@@ -1,7 +1,7 @@
 <template>
   <div v-if="editor" class="editor">
     <editor-menu class="editor__header" :editor="editor" />
-    <editor-content class="editor__content" :editor="editor"/>
+    <editor-content class="editor__content" :editor="editor" />
   </div>
 </template>
   
@@ -37,18 +37,31 @@ export default {
         PageExtension,
       ],
 
-      content: `<editor-page />`,
+      content: `
+                <editor-page />`,
       
+
       onUpdate({ editor }) {
 
         const editorPages = editor.state.doc.content;
         let editorHtml = editor.getHTML()
 
-        if (editorPages.lastChild.content.size == 100){
+
+        console.log(editorPages)
+
+        if (editorPages.lastChild.content.content.length == 50) {
           editorHtml += `<editor-page />`
           editor.commands.setContent(editorHtml)
         }
-        
+
+        editorPages.forEach((page, index) => {
+          if (page.content.content.length > 50) {
+            let textForNextPage = page.slice(100)
+            
+            // editorPages.child(index+1).replace(0, textForNextPage.size, textForNextPage)
+            
+          }
+        })
 
 
         // let editorHtml = editor.getHTML()
@@ -81,22 +94,22 @@ export default {
 <style lang="scss">
 .editor {
 
-  .editor__header{
+  .editor__header {
     position: fixed;
     width: 100%;
     overflow: hidden;
     z-index: 2;
   }
 
-  .editor__content{
+  .editor__content {
     padding: 100px 20px 0;
     width: 100%;
     max-width: 1024px;
-    margin:  0 auto;
+    margin: 0 auto;
 
     .ProseMirror {
       outline: none;
-      overflow:hidden;
+      overflow: hidden;
 
       &::-webkit-scrollbar {
         display: none;
