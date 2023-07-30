@@ -9,11 +9,10 @@
 import StarterKit from '@tiptap/starter-kit'
 import Paragraph from '@tiptap/extension-paragraph'
 import { Editor, EditorContent } from '@tiptap/vue-3'
-import { EditorState, Transaction } from '@tiptap/pm/state'
+import { EditorState } from '@tiptap/pm/state'
 import EditorMenu from './EditorMenu.vue'
 
 import PageExtension from "@/extensions/PageExtension.js"
-import { Fragment } from 'vue'
 
 
 export default {
@@ -43,26 +42,25 @@ export default {
 
       onUpdate({ editor }) {
 
-        const editorPages = editor.state.doc.content;
+        let editorPages = editor.state;
         let editorHtml = editor.getHTML()
 
-
-        console.log(editorPages)
-
-        if (editorPages.lastChild.content.content.length == 50) {
+        if (editorPages.doc.content.lastChild.content.content.length == 50) {
           editorHtml += `<editor-page />`
           editor.commands.setContent(editorHtml)
         }
 
-        editorPages.forEach((page, index) => {
-          if (page.content.content.length > 50) {
-            let textForNextPage = page.slice(100)
-            
-            // editorPages.child(index+1).replace(0, textForNextPage.size, textForNextPage)
-            
+        editorPages.doc.content.forEach((page, offset, index) => {
+          if ( page.content.content.length > 50) {
+
+            // console.log(page.content.lastChild)
+
+            // // let last = page.content.content.pop()
+            // editorPages.doc.content.child(index+1).content.addToStart(page.content.lastChild)
           }
         })
 
+        editor.view.updateState(editorPages)
 
         // let editorHtml = editor.getHTML()
         // let height = editor.view.dom.clientHeight
