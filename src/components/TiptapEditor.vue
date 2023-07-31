@@ -42,43 +42,26 @@ export default {
 
       onUpdate({ editor }) {
 
-        let editorPages = editor.state;
         let editorHtml = editor.getHTML()
+        let editorJSON = editor.getJSON()
 
-        if (editorPages.doc.content.lastChild.content.content.length == 50) {
+        // console.log(editorJSON)
+
+        if (editor.view.dom.lastChild.querySelector(".content").clientHeight >= 1012) {
           editorHtml += `<editor-page />`
           editor.commands.setContent(editorHtml)
         }
 
-        editorPages.doc.content.forEach((page, offset, index) => {
-          if ( page.content.content.length > 50) {
-
-            // console.log(page.content.lastChild)
-
-            // // let last = page.content.content.pop()
-            // editorPages.doc.content.child(index+1).content.addToStart(page.content.lastChild)
+        for (let i = 0; i < editorJSON.content.length; i++){
+          if (editor.view.dom.children[i].children[0].clientHeight > 1012){
+            
+            let lastParagraph = editorJSON.content[i].content.pop()
+            console.log(lastParagraph)
+            editorJSON.content[i+1].content.unshift(lastParagraph)
+            editor.commands.setContent(editorJSON)
           }
-        })
-
-        editor.view.updateState(editorPages)
-
-        // let editorHtml = editor.getHTML()
-        // let height = editor.view.dom.clientHeight
-
-        // if(height > this.prevHeight){
-        //   if (height % 300 > 0 && height % 300 < 100) {
-        //     editorHtml += `<editor-page />`
-        //     editor.commands.setContent(editorHtml)
-        //   }
-        // }
-        // else{
-        //   let countOfPages = editor.view.dom.childElementCount
-        //   if (height % 1000*countOfPages > 0 & height % 1000*countOfPages < 100)
-        //   {
-        //     editor.view.dom.removeChild(editor.view.dom.lastElementChild)
-        //   }
-        // }
-        // this.prevHeight = height
+        }
+        
       }
     })
   },

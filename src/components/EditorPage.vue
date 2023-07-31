@@ -26,8 +26,6 @@ export default {
 }
 
 .content {
-    max-height: 900px;
-    overflow-y: scroll;
 
     &::-webkit-scrollbar {
         display: none;
