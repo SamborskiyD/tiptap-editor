@@ -9,10 +9,11 @@
 import StarterKit from '@tiptap/starter-kit'
 import Paragraph from '@tiptap/extension-paragraph'
 import { Editor, EditorContent } from '@tiptap/vue-3'
-import { EditorState } from '@tiptap/pm/state'
+import { EditorState, TextSelection } from '@tiptap/pm/state'
 import EditorMenu from './EditorMenu.vue'
 
 import PageExtension from "@/extensions/PageExtension.js"
+import { EditorView } from '@tiptap/pm/view'
 
 
 export default {
@@ -38,30 +39,47 @@ export default {
 
       content: `
                 <editor-page />`,
-      
+
 
       onUpdate({ editor }) {
+
 
         let editorHtml = editor.getHTML()
         let editorJSON = editor.getJSON()
 
-        // console.log(editorJSON)
+        let height = editor.view.dom.lastChild.querySelector(".content").clientHeight
 
-        if (editor.view.dom.lastChild.querySelector(".content").clientHeight >= 1012) {
-          editorHtml += `<editor-page />`
-          editor.commands.setContent(editorHtml)
-        }
-
-        for (let i = 0; i < editorJSON.content.length; i++){
-          if (editor.view.dom.children[i].children[0].clientHeight > 1012){
-            
-            let lastParagraph = editorJSON.content[i].content.pop()
-            console.log(lastParagraph)
-            editorJSON.content[i+1].content.unshift(lastParagraph)
-            editor.commands.setContent(editorJSON)
+        if (height > this.prevHeight) {
+          if (height >= 912) {
+            editorHtml += `<editor-page />`
+            editor.commands.setContent(editorHtml)
           }
         }
-        
+        else {
+
+        }
+
+        for (let i = 0; i < editorJSON.content.length; i++) {
+          console.log(height, this.prevHeight)
+          if (height > this.prevHeight) {
+            if (editor.view.dom.children[i].children[0].clientHeight > 912) {
+              let lastParagraph = editorJSON.content[i].content.pop()
+              editorJSON.content[i + 1].content.unshift(lastParagraph)
+              editor.commands.setContent(editorJSON)
+            }
+          }
+          else{
+            if (editor.view.dom.children[i].children[0].clientHeight < 912 && editor.view.dom.children[i+1]){
+              let firstPargaph = editorJSON.content[i+1].content.shift()
+              editorJSON.content[i].content.push(firstPargaph)
+              editor.commands.setContent(editorJSON)
+            }
+          }
+        }
+
+
+
+        this.prevHeight = height
       }
     })
   },
