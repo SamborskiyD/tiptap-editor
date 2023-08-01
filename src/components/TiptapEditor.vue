@@ -26,7 +26,8 @@ export default {
   data() {
     return {
       editor: null,
-      prevHeight: 0,
+      editorHeight: 0,
+      prevEditorHeight: 0,
     }
   },
 
@@ -46,40 +47,36 @@ export default {
 
         let editorHtml = editor.getHTML()
         let editorJSON = editor.getJSON()
+        const editorHeight = editor.view.dom.clientHeight
 
-        let height = editor.view.dom.lastChild.querySelector(".content").clientHeight
+        let lastPageHeight = editor.view.dom.lastChild.querySelector(".content").clientHeight
 
-        if (height > this.prevHeight) {
-          if (height >= 912) {
+        if (editorHeight > this.prevEditorHeight) {
+          if (lastPageHeight >= 912) {
             editorHtml += `<editor-page />`
             editor.commands.setContent(editorHtml)
           }
         }
-        else {
-
-        }
 
         for (let i = 0; i < editorJSON.content.length; i++) {
-          console.log(height, this.prevHeight)
-          if (height > this.prevHeight) {
-            if (editor.view.dom.children[i].children[0].clientHeight > 912) {
+          let pageHeight = editor.view.dom.children[i].children[0].clientHeight
+
+          if (editorHeight > this.prevEditorHeight) {
+            if (pageHeight > 912) {
               let lastParagraph = editorJSON.content[i].content.pop()
               editorJSON.content[i + 1].content.unshift(lastParagraph)
               editor.commands.setContent(editorJSON)
             }
           }
           else{
-            if (editor.view.dom.children[i].children[0].clientHeight < 912 && editor.view.dom.children[i+1]){
+            if (pageHeight < 912 && editor.view.dom.children[i+1]){
               let firstPargaph = editorJSON.content[i+1].content.shift()
               editorJSON.content[i].content.push(firstPargaph)
               editor.commands.setContent(editorJSON)
             }
           }
         }
-
-
-
-        this.prevHeight = height
+        this.prevEditorHeight = editorHeight
       }
     })
   },
